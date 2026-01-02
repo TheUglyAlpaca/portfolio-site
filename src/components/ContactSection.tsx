@@ -2,24 +2,25 @@ import { Mail, Github, Linkedin, Twitter } from "lucide-react";
 
 const ContactSection = () => {
   return (
-    <footer id="contact" className="py-32 px-6 border-t border-border">
+    <footer id="contact" className="py-32 px-6 border-t-2 border-border">
       <div className="max-w-4xl mx-auto text-center">
-        <p className="text-muted-foreground text-sm tracking-[0.2em] uppercase mb-4">
-          Get in Touch
+        <p className="text-primary text-xs tracking-[0.3em] uppercase mb-4 text-glow-blue">
+          // Contact
         </p>
-        <h2 className="font-heading text-3xl md:text-5xl font-medium mb-6">
-          Let's <span className="text-primary italic">collaborate</span>
+        <h2 className="font-pixel text-lg md:text-2xl leading-relaxed mb-6">
+          Let's{" "}
+          <span className="text-accent text-glow-green">collaborate</span>
         </h2>
-        <p className="text-muted-foreground max-w-xl mx-auto mb-10">
+        <p className="text-muted-foreground max-w-xl mx-auto mb-10 font-mono text-sm">
           Always open to discussing new projects, creative ideas, or opportunities 
           to be part of something meaningful.
         </p>
         
         <a 
           href="mailto:hello@example.com"
-          className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-full font-medium hover:opacity-90 transition-opacity"
+          className="inline-flex items-center gap-3 px-6 py-3 bg-primary text-primary-foreground font-mono text-sm hover:bg-accent transition-colors glow-blue hover:glow-green"
         >
-          <Mail className="w-5 h-5" />
+          <Mail className="w-4 h-4" />
           Say Hello
         </a>
         
@@ -34,16 +35,16 @@ const ContactSection = () => {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-colors"
+              className="w-10 h-10 border-2 border-border hover:border-primary flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
               aria-label={label}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="w-4 h-4" />
             </a>
           ))}
         </div>
         
-        <p className="text-sm text-muted-foreground mt-16">
-          © {new Date().getFullYear()} — Designed & built with care
+        <p className="text-xs text-muted-foreground mt-16 font-mono">
+          © {new Date().getFullYear()} — Built with pixels & passion
         </p>
       </div>
     </footer>

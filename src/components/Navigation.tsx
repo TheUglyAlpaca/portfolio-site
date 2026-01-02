@@ -21,23 +21,23 @@ const Navigation = () => {
   return (
     <nav 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-background/80 backdrop-blur-md border-b border-border" : ""
+        scrolled ? "bg-background/95 backdrop-blur-sm border-b-2 border-border" : ""
       }`}
     >
       <div className="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
         <a 
           href="#" 
-          className="font-heading text-lg font-medium hover:text-primary transition-colors"
+          className="font-pixel text-xs text-primary hover:text-accent transition-colors text-glow-blue"
         >
-          YN
+          {"<YN/>"}
         </a>
         
-        <div className="flex gap-8">
+        <div className="flex gap-6">
           {links.map((link) => (
             <a
               key={link.label}
               href={link.href}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors font-mono"
             >
               {link.label}
             </a>
