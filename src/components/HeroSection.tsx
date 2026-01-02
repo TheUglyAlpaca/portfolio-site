@@ -6,12 +6,27 @@ import GameOfLife from "./GameOfLife";
 
 const HeroSection = () => {
   const [rotation, setRotation] = useState(0);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  // Detect touch device on mount
+  useState(() => {
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  });
 
   const handleMouseEnter = () => {
-    setRotation(prev => prev + 180);
+    if (!isTouchDevice) {
+      setRotation(prev => prev + 180);
+    }
   };
 
   const handleMouseLeave = () => {
+    if (!isTouchDevice) {
+      setRotation(prev => prev + 180);
+    }
+  };
+
+  const handleClick = () => {
+    // Always works on mobile, also works on desktop as a fallback
     setRotation(prev => prev + 180);
   };
 
@@ -35,6 +50,7 @@ const HeroSection = () => {
         }
         .flip-card {
           perspective: 1000px;
+          cursor: pointer;
         }
         .flip-card-inner {
           position: relative;
@@ -57,12 +73,13 @@ const HeroSection = () => {
       `}</style>
 
       <div className="text-center max-w-3xl mx-auto relative z-10">
-        {/* Profile Photo - With floating animation and flip on hover */}
+        {/* Profile Photo - With floating animation and flip on hover/tap */}
         <div className="mb-8 animate-fade-up">
           <div
             className="w-40 h-40 md:w-48 md:h-48 mx-auto animate-float flip-card"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            onClick={handleClick}
           >
             <div
               className="flip-card-inner border border-border/50 rounded-2xl"
