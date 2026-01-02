@@ -1,6 +1,6 @@
 # Robert Tylman Portfolio
 
-Personal portfolio website showcasing my work as a Computer Engineer and Musician.
+Personal portfolio website showcasing my work.
 
 ## Tech Stack
 
