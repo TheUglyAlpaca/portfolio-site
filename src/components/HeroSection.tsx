@@ -1,9 +1,11 @@
 import { ArrowDown, FileText } from "lucide-react";
 import heroPhoto from "@/assets/headshot.jpeg";
+import GameOfLife from "./GameOfLife";
 
 const HeroSection = () => {
   return (
-    <section className="min-h-screen flex flex-col justify-center items-center px-6 relative pixel-grid">
+    <section className="min-h-screen flex flex-col justify-center items-center px-6 relative">
+      <GameOfLife cellSize={20} updateInterval={150} opacity={0.08} />
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
@@ -11,6 +13,13 @@ const HeroSection = () => {
         }
         .animate-float {
           animation: float 4s ease-in-out infinite;
+        }
+        @keyframes pulse-scale {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+        .animate-pulse-scale {
+          animation: pulse-scale 2s ease-in-out infinite;
         }
       `}</style>
 
@@ -27,7 +36,7 @@ const HeroSection = () => {
         </div>
 
         {/* Greeting */}
-        <p className="text-muted-foreground text-sm mb-3 animate-fade-up delay-100 font-standard">
+        <p className="text-foreground text-base mb-3 animate-fade-up delay-100 font-standard">
           Hi, I'm Robert!
         </p>
 
@@ -42,7 +51,7 @@ const HeroSection = () => {
             href={`${import.meta.env.BASE_URL}RobertTylmanResume.pdf`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2.5 border border-foreground/30 hover:border-foreground text-foreground/80 hover:text-foreground transition-all duration-200 font-standard text-sm"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border border-foreground/30 hover:border-foreground text-foreground/80 hover:text-foreground transition-all duration-200 font-standard text-sm animate-pulse-scale backdrop-blur-md bg-white/5"
           >
             <FileText className="w-4 h-4" />
             <span>Resume</span>

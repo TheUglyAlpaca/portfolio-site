@@ -40,7 +40,7 @@ interface MusicSectionProps {
 
 const MusicSection = ({ onPlayStateChange }: MusicSectionProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
@@ -259,7 +259,7 @@ const MusicSection = ({ onPlayStateChange }: MusicSectionProps) => {
   const handleTrackClick = async (index: number) => {
     if (!audioRef.current) return;
 
-    if (currentTrackIndex === index) {
+    if (currentTrackIndex === index && currentTrackIndex !== null) {
       // Toggle play/pause for current track
       if (isPlaying) {
         audioRef.current.pause();
