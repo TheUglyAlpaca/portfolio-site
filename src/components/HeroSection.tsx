@@ -57,7 +57,7 @@ const HeroSection = () => {
       >
         <ArrowDown className="w-5 h-5 animate-bounce" />
       </a>
-    </section>
+    </section >
   );
 };
 

@@ -26,6 +26,21 @@ const MusicSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const paletteRef = useRef<{ primary: string; secondary: string }>({ primary: "#9b87f5", secondary: "#3b82f6" });
+
+  const generateRandomPalette = () => {
+    const hue1 = Math.floor(Math.random() * 360);
+    const hue2 = (hue1 + 40 + Math.floor(Math.random() * 40)) % 360; // Analogous-ish colors
+    return {
+      primary: `hsla(${hue1}, 80%, 65%, 0.8)`,
+      secondary: `hsla(${hue2}, 70%, 50%, 0.5)`
+    };
+  };
 
   useEffect(() => {
     // Initialize audio object
@@ -33,6 +48,12 @@ const MusicSection = () => {
 
     // Cleanup
     return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
@@ -46,6 +67,11 @@ const MusicSection = () => {
     const handleEnded = () => {
       setIsPlaying(false);
       setProgress(0);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (canvasRef.current) {
+        const ctx = canvasRef.current.getContext("2d");
+        if (ctx) ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      }
     };
 
     const handleTimeUpdate = () => {
@@ -65,6 +91,69 @@ const MusicSection = () => {
       audioRef.current?.removeEventListener('timeupdate', handleTimeUpdate);
     };
   }, []);
+
+  const animate = () => {
+    if (!analyserRef.current || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Set canvas size to match display size
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    const bufferLength = analyserRef.current.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyserRef.current.getByteFrequencyData(dataArray);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const barWidth = (canvas.width / bufferLength) * 2.5;
+    let barHeight;
+    let x = 0;
+
+    // Use dynamic palette for gradient
+    const { primary, secondary } = paletteRef.current;
+
+    for (let i = 0; i < bufferLength; i++) {
+      // Scale bar height to fit canvas height better (up to ~60% of container)
+      barHeight = (dataArray[i] / 255) * canvas.height * 0.6;
+
+      // Create gradient for each bar
+      const gradient = ctx.createLinearGradient(0, canvas.height - barHeight, 0, canvas.height);
+      gradient.addColorStop(0, primary); // High energy color
+      gradient.addColorStop(1, secondary); // Low energy color
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+
+      x += barWidth + 1;
+    }
+
+    rafRef.current = requestAnimationFrame(animate);
+  };
+
+  const setupAudioContext = () => {
+    if (!audioContextRef.current && audioRef.current) {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContextClass();
+      audioContextRef.current = ctx;
+
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 2048;
+      analyserRef.current = analyser;
+
+      const src = ctx.createMediaElementSource(audioRef.current);
+      sourceRef.current = src;
+
+      src.connect(analyser);
+      analyser.connect(ctx.destination);
+    }
+    if (audioContextRef.current?.state === 'suspended') {
+      audioContextRef.current.resume();
+    }
+  };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -91,9 +180,16 @@ const MusicSection = () => {
       if (isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
+        if (canvasRef.current) {
+          const ctx = canvasRef.current.getContext("2d");
+          if (ctx) ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        }
       } else {
+        setupAudioContext();
+        paletteRef.current = generateRandomPalette();
         audioRef.current.play();
         setIsPlaying(true);
+        animate();
       }
     } else {
       // Play new track
@@ -106,121 +202,135 @@ const MusicSection = () => {
       audioRef.current.src = tracks[index].audio;
       audioRef.current.load();
       audioRef.current.play()
-        .then(() => setIsPlaying(true))
+        .then(() => {
+          setIsPlaying(true);
+          setupAudioContext();
+          paletteRef.current = generateRandomPalette();
+          animate();
+        })
         .catch(err => console.error("Error playing audio:", err));
     }
   };
 
   return (
-    <section id="music" className="py-32 px-6">
+    <section id="music" className="pt-10 pb-32 px-6">
       <div className="max-w-4xl mx-auto">
-        {/* Section Title */}
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-          Production Portfolio
-        </h2>
+        <div className="relative overflow-hidden rounded-2xl p-8 -mx-8 mb-24">
+          <canvas
+            ref={canvasRef}
+            className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-40 mix-blend-screen"
+          />
 
-        <style>{`
-          @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-          }
-          .animate-float {
-            animation: float 4s ease-in-out infinite;
-          }
-        `}</style>
+          <div className="relative z-10">
+            {/* Section Title */}
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+              Production Portfolio
+            </h2>
 
-        {/* Album Feature */}
-        <div className="grid md:grid-cols-2 gap-8 items-center mb-16">
-          {/* Album Art */}
-          <div className="flex justify-center">
-            <div className="w-64 h-64 rounded-lg overflow-hidden animate-float">
-              <img
-                src={albumCover}
-                alt="Portage Album Cover"
-                className="w-full h-full object-cover"
-              />
+            <style>{`
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-10px); }
+                }
+                .animate-float {
+                    animation: float 4s ease-in-out infinite;
+                }
+                `}</style>
+
+            {/* Album Feature */}
+            <div className="grid md:grid-cols-2 gap-8 items-center mb-16">
+              {/* Album Art */}
+              <div className="flex justify-center">
+                <div className="w-64 h-64 rounded-lg overflow-hidden animate-float">
+                  <img
+                    src={albumCover}
+                    alt="Portage Album Cover"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+
+              {/* Album Info */}
+              <div className="text-center md:text-left">
+                <a
+                  href="https://open.spotify.com/album/1xihSP0ygq645gk4zGEYES?si=fVEIKo8DTAibSZCZWf0jZQ"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-xl font-bold underline hover:text-primary transition-colors mb-4"
+                >
+                  Portage
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                  My debut EP. Although it leans into synthesized and electronic sounds, its roots are
+                  deeply organic and grounded in nature. Each track includes recordings I captured on
+                  my iPhone while working as a canoe tripping guide in northern Canada or spending
+                  time with friends.
+                </p>
+                <p className="text-muted-foreground text-sm italic">
+                  Everything you hear was written, performed, mixed, and mastered by me.
+                </p>
+              </div>
+            </div>
+
+            {/* Track List */}
+            <div className="space-y-2">
+              {tracks.map((track, index) => {
+                const isCurrentTrack = currentTrackIndex === index;
+                const isTrackPlaying = isCurrentTrack && isPlaying;
+
+                return (
+                  <div
+                    key={track.title}
+                    onClick={() => handleTrackClick(index)}
+                    className={`group flex items-center gap-4 p-4 rounded transition-colors cursor-pointer ${isCurrentTrack ? "bg-secondary/50 border border-primary/20" : "hover:bg-secondary/30 border border-transparent"
+                      }`}
+                  >
+                    <img
+                      src={track.image}
+                      alt={track.title}
+                      className={`w-12 h-12 rounded object-cover shadow-sm transition-opacity ${isCurrentTrack && !isPlaying ? "opacity-80" : "opacity-100"
+                        }`}
+                    />
+                    <button
+                      className={`w-10 h-10 rounded-full border flex items-center justify-center transition-colors flex-shrink-0 ${isCurrentTrack
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "border-foreground/30 group-hover:border-foreground"
+                        }`}
+                    >
+                      {isTrackPlaying ? (
+                        <Pause className="w-4 h-4" />
+                      ) : (
+                        <Play className="w-4 h-4 ml-0.5" />
+                      )}
+                    </button>
+                    <div className="flex-1">
+                      <span className={`text-sm font-medium block ${isCurrentTrack ? "text-primary" : ""}`}>
+                        {track.title}
+                      </span>
+                      {isCurrentTrack && (
+                        <div className="mt-2 w-full pr-4">
+                          <div
+                            className="h-1 bg-border/50 rounded-full overflow-hidden cursor-pointer hover:h-1.5 transition-all group/progress relative"
+                            onClick={handleSeek}
+                          >
+                            <div
+                              className="h-full bg-primary transition-all duration-100 ease-linear"
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                          <span className="text-xs text-primary/70 font-mono mt-1 block">
+                            {isPlaying ? "Now Playing..." : "Paused"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-sm text-muted-foreground font-mono">{track.duration}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
-
-          {/* Album Info */}
-          <div className="text-center md:text-left">
-            <a
-              href="https://open.spotify.com/album/1xihSP0ygq645gk4zGEYES?si=fVEIKo8DTAibSZCZWf0jZQ"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-xl font-bold underline hover:text-primary transition-colors mb-4"
-            >
-              Portage
-              <ExternalLink className="w-4 h-4" />
-            </a>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-              My debut EP. Although it leans into synthesized and electronic sounds, its roots are
-              deeply organic and grounded in nature. Each track includes recordings I captured on
-              my iPhone while working as a canoe tripping guide in northern Canada or spending
-              time with friends.
-            </p>
-            <p className="text-muted-foreground text-sm italic">
-              Everything you hear was written, performed, mixed, and mastered by me.
-            </p>
-          </div>
-        </div>
-
-        {/* Track List */}
-        <div className="space-y-2 mb-24">
-          {tracks.map((track, index) => {
-            const isCurrentTrack = currentTrackIndex === index;
-            const isTrackPlaying = isCurrentTrack && isPlaying;
-
-            return (
-              <div
-                key={track.title}
-                onClick={() => handleTrackClick(index)}
-                className={`group flex items-center gap-4 p-4 rounded transition-colors cursor-pointer ${isCurrentTrack ? "bg-secondary/50 border border-primary/20" : "hover:bg-secondary/30 border border-transparent"
-                  }`}
-              >
-                <img
-                  src={track.image}
-                  alt={track.title}
-                  className={`w-12 h-12 rounded object-cover shadow-sm transition-opacity ${isCurrentTrack && !isPlaying ? "opacity-80" : "opacity-100"
-                    }`}
-                />
-                <button
-                  className={`w-10 h-10 rounded-full border flex items-center justify-center transition-colors flex-shrink-0 ${isCurrentTrack
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "border-foreground/30 group-hover:border-foreground"
-                    }`}
-                >
-                  {isTrackPlaying ? (
-                    <Pause className="w-4 h-4" />
-                  ) : (
-                    <Play className="w-4 h-4 ml-0.5" />
-                  )}
-                </button>
-                <div className="flex-1">
-                  <span className={`text-sm font-medium block ${isCurrentTrack ? "text-primary" : ""}`}>
-                    {track.title}
-                  </span>
-                  {isCurrentTrack && (
-                    <div className="mt-2 w-full pr-4">
-                      <div
-                        className="h-1 bg-border/50 rounded-full overflow-hidden cursor-pointer hover:h-1.5 transition-all group/progress relative"
-                        onClick={handleSeek}
-                      >
-                        <div
-                          className="h-full bg-primary transition-all duration-100 ease-linear"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                      <span className="text-xs text-primary/70 font-mono mt-1 block">
-                        {isPlaying ? "Now Playing..." : "Paused"}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <span className="text-sm text-muted-foreground font-mono">{track.duration}</span>
-              </div>
-            );
-          })}
         </div>
 
         {/* Piano Showcase */}
