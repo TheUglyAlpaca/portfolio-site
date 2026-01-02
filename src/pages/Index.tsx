@@ -3,15 +3,20 @@ import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import MusicSection from "@/components/MusicSection";
+import StarField from "@/components/StarField";
+import { useState } from "react";
 
 const Index = () => {
+  const [isPlaying, setIsPlaying] = useState(false);
+
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background relative z-10">
+      <StarField isActive={isPlaying} />
       <Navigation />
       <HeroSection />
       <AboutSection />
       <ProjectsSection />
-      <MusicSection />
+      <MusicSection onPlayStateChange={setIsPlaying} />
 
       {/* Footer */}
       <footer className="py-8 px-6 text-center">

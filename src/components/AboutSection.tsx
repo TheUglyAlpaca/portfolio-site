@@ -11,13 +11,15 @@ const AboutSection = () => {
 
           <div className="space-y-6 text-muted-foreground leading-relaxed font-standard">
             <p className="text-foreground text-lg">
-              I'm a Computer Engineer focused on software engineering and applied AI.
-              I build scalable, intelligent systems that solve complex problems and improve workflows,
-              including tools for music and audio technology. My work emphasizes clean design,
-              strong algorithms, and practical impact.
+              I’m a Computer Engineer focused on software engineering and applied AI.
+              I build scalable, high-performance systems that solve complex problems and
+              improve real-world workflows, with an emphasis on clean architecture and
+              efficient algorithms.
             </p>
-            <p className="text-base">
-              With a background in Computer Science and music, I balance structure and creativity to deliver unique solutions. I explore the intersection of technology and art, building tools that empower creators and crafting sounds that tell stories.
+            <p className="text-muted-foreground text-lg">
+              With a strong foundation in computer science and experience in music technology,
+              I bring a structured, analytical approach while maintaining a creative perspective
+              in building impactful tools.
             </p>
 
 

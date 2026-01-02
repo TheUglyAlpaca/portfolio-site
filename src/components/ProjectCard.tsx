@@ -159,7 +159,7 @@ const ProjectCard = ({ title, description, tags, images, link, github, imageFit 
           </div>
         </div>
 
-        <p className="text-sm text-muted-foreground mb-6 leading-relaxed font-standard flex-1">
+        <p className="text-lg text-muted-foreground mb-6 leading-relaxed font-standard flex-1">
           {description}
         </p>
 

@@ -15,23 +15,106 @@ const tracks = [
 ];
 
 const pianoVideos = [
-  { title: "Piano Performance 1" },
-  { title: "Piano Performance 2" },
-  { title: "Piano Performance 3" },
-  { title: "Piano Performance 4" },
+  { title: "Gypsy Woman", url: "https://vimeo.com/1038732482" },
+  { title: "Just The Two Of Us", url: "https://vimeo.com/1038733696" },
+  { title: "Great Pumpkin Waltz", url: "https://vimeo.com/1038733606" },
+  { title: "Fireflies", url: "https://vimeo.com/1038733505" },
 ];
 
-const MusicSection = () => {
-  const [currentTrackIndex, setCurrentTrackIndex] = useState<number | null>(null);
+const getEmbedUrl = (url: string) => {
+  if (url.includes('vimeo.com')) {
+    const videoId = url.split('/').pop()?.split('?')[0];
+    return `https://player.vimeo.com/video/${videoId}?api=1`;
+  }
+  if (url.includes('instagram.com')) {
+    return `${url.split('?')[0].replace(/\/$/, '')}/embed/`;
+  }
+  return url;
+};
+
+
+
+interface MusicSectionProps {
+  onPlayStateChange?: (playing: boolean) => void;
+}
+
+const MusicSection = ({ onPlayStateChange }: MusicSectionProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [progress, setProgress] = useState(0);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
+  const audioRef = useRef<HTMLAudioElement>(new Audio(tracks[0].audio));
+
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
   const rafRef = useRef<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const paletteRef = useRef<{ primary: string; secondary: string }>({ primary: "#9b87f5", secondary: "#3b82f6" });
+
+  // Sync effect with parent based on music OR video
+  useEffect(() => {
+    if (onPlayStateChange) {
+      onPlayStateChange(isPlaying || isVideoPlaying);
+    }
+  }, [isPlaying, isVideoPlaying, onPlayStateChange]);
+
+  // Handle Vimeo messages
+  useEffect(() => {
+    const handleVimeoMessage = (event: MessageEvent) => {
+      // Basic security check - in production you'd want to be more specific
+      if (!event.origin.includes('vimeo.com')) return;
+
+      try {
+        const data = JSON.parse(event.data);
+
+        // Vimeo ready event
+        if (data.event === 'ready') {
+          // Subscribe to play/pause events
+          const iframes = document.querySelectorAll('iframe');
+          iframes.forEach(iframe => {
+            if (iframe.contentWindow) {
+              iframe.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'play' }), '*');
+              iframe.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'pause' }), '*');
+              iframe.contentWindow.postMessage(JSON.stringify({ method: 'addEventListener', value: 'finish' }), '*');
+            }
+          });
+        }
+
+        // Playback events
+        if (data.event === 'play') {
+          setIsVideoPlaying(true);
+          // Pause portfolio music if playing
+          if (isPlaying) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+            if (canvasRef.current) {
+              const ctx = canvasRef.current.getContext("2d");
+              if (ctx) ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+            }
+          }
+        } else if (data.event === 'pause' || data.event === 'finish') {
+          setIsVideoPlaying(false);
+        }
+      } catch (err) {
+        // Not a JSON message or not from Vimeo
+      }
+    };
+
+    window.addEventListener('message', handleVimeoMessage);
+    return () => window.removeEventListener('message', handleVimeoMessage);
+  }, [isPlaying]);
+
+  const pauseAllVideos = () => {
+    const iframes = document.querySelectorAll('iframe');
+    iframes.forEach(iframe => {
+      if (iframe.contentWindow) {
+        iframe.contentWindow.postMessage(JSON.stringify({ method: 'pause' }), '*');
+      }
+    });
+    setIsVideoPlaying(false);
+  };
 
   const generateRandomPalette = () => {
     const hue1 = Math.floor(Math.random() * 360);
@@ -186,6 +269,7 @@ const MusicSection = () => {
           if (ctx) ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         }
       } else {
+        pauseAllVideos();
         setupAudioContext();
         paletteRef.current = generateRandomPalette();
         audioRef.current.play();
@@ -197,6 +281,7 @@ const MusicSection = () => {
       if (isPlaying) {
         audioRef.current.pause();
       }
+      pauseAllVideos();
 
       setCurrentTrackIndex(index);
       setProgress(0);
@@ -216,7 +301,7 @@ const MusicSection = () => {
   return (
     <section id="music" className="pt-10 pb-32 px-6">
       <div className="max-w-4xl mx-auto">
-        <div className="relative overflow-hidden rounded-2xl p-8 -mx-8 mb-24">
+        <div className="relative overflow-hidden rounded-2xl p-8 -mx-8 mb-8">
           <canvas
             ref={canvasRef}
             className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-40 mix-blend-screen"
@@ -342,26 +427,43 @@ const MusicSection = () => {
         {/* Piano Showcase */}
         <div>
 
-          <h3 className="text-2xl md:text-3xl font-bold text-center mb-12">
+          <h3 className="text-2xl md:text-3xl font-bold text-center mb-10">
             Piano Showcase
           </h3>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {pianoVideos.map((video, index) => (
-              <div
-                key={index}
-                className="relative aspect-[9/16] bg-secondary rounded-lg overflow-hidden cursor-pointer group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50"></div>
-                <div className="absolute top-3 left-3 flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-green-500"></div>
-                  <span className="text-xs font-medium text-white">Robbie T</span>
+              <div key={index} className="space-y-2">
+                <div
+                  className="relative aspect-[9/16] bg-secondary rounded-lg overflow-hidden group"
+                >
+                  {video.url ? (
+                    <iframe
+                      src={getEmbedUrl(video.url)}
+                      className="w-full h-full border-0"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowFullScreen
+                      allowTransparency
+                      scrolling="no"
+                    />
+                  ) : (
+                    <div className="cursor-pointer h-full">
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50"></div>
+                      <div className="absolute top-3 left-3 flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-green-500"></div>
+                        <span className="text-xs font-medium text-white">Robbie T</span>
+                      </div>
+                      <div className="absolute bottom-4 left-4">
+                        <div className="w-10 h-10 rounded-full bg-black/50 flex items-center justify-center">
+                          <Play className="w-4 h-4 text-white ml-0.5" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="absolute bottom-4 left-4">
-                  <div className="w-10 h-10 rounded-full bg-black/50 flex items-center justify-center">
-                    <Play className="w-4 h-4 text-white ml-0.5" />
-                  </div>
-                </div>
+                <p className="text-sm font-medium text-center text-muted-foreground uppercase tracking-wider">
+                  {video.title}
+                </p>
               </div>
             ))}
           </div>
