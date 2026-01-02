@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Play, Pause, ExternalLink } from "lucide-react";
-import albumCover from "@/assets/album cover.png";
+import albumCover from "@/assets/portage-album-cover.png";
 import takeALookImg from "@/assets/take-a-look.png";
 import helloMissJohnsonImg from "@/assets/hello-miss-johnson.jpg";
 import firefliesArt from "@/assets/fireflies-remix.jpg";

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ArrowDown, FileText } from "lucide-react";
-import heroPhoto from "@/assets/profilepic2.jpg";
-import backPhoto from "@/assets/done.jpg";
+import heroPhoto from "@/assets/hero-profile-front.jpg";
+import backPhoto from "@/assets/hero-profile-back.jpg";
 import GameOfLife from "./GameOfLife";
 
 const HeroSection = () => {
