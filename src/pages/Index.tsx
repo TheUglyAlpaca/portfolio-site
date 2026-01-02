@@ -3,7 +3,6 @@ import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import MusicSection from "@/components/MusicSection";
-import ContactSection from "@/components/ContactSection";
 
 const Index = () => {
   return (
@@ -13,7 +12,13 @@ const Index = () => {
       <AboutSection />
       <ProjectsSection />
       <MusicSection />
-      <ContactSection />
+
+      {/* Footer */}
+      <footer className="py-8 px-6 text-center">
+        <p className="text-sm text-muted-foreground">
+          © Robert Tylman 2026. All rights reserved.
+        </p>
+      </footer>
     </main>
   );
 };

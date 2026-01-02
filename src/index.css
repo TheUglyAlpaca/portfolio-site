@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&display=swap');
 
 @layer base {
   :root {
@@ -45,10 +45,11 @@
     --gradient-pixel: linear-gradient(180deg, hsl(220 20% 4%) 0%, hsl(220 20% 2%) 100%);
     --shadow-neon-blue: 0 0 20px hsl(200 100% 50% / 0.4);
     --shadow-neon-green: 0 0 20px hsl(145 80% 45% / 0.4);
-    
+
     /* Typography */
-    --font-pixel: 'Press Start 2P', cursive;
-    --font-mono: 'Space Mono', monospace;
+    --font-pixel: 'Press Start 2P', 'Courier New', monospace;
+    --font-standard: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
 
     /* Transitions */
     --transition-smooth: all 0.2s ease-out;
@@ -75,11 +76,17 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: var(--font-mono);
+    font-family: var(--font-standard);
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-pixel);
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-standard);
+    @apply tracking-tight font-bold;
   }
 
   /* Pixel-perfect rendering */
@@ -107,11 +114,25 @@
     opacity: 0;
   }
 
-  .delay-100 { animation-delay: 0.1s; }
-  .delay-200 { animation-delay: 0.2s; }
-  .delay-300 { animation-delay: 0.3s; }
-  .delay-400 { animation-delay: 0.4s; }
-  .delay-500 { animation-delay: 0.5s; }
+  .delay-100 {
+    animation-delay: 0.1s;
+  }
+
+  .delay-200 {
+    animation-delay: 0.2s;
+  }
+
+  .delay-300 {
+    animation-delay: 0.3s;
+  }
+
+  .delay-400 {
+    animation-delay: 0.4s;
+  }
+
+  .delay-500 {
+    animation-delay: 0.5s;
+  }
 
   .glow-blue {
     box-shadow: var(--shadow-neon-blue);
@@ -130,11 +151,45 @@
   }
 
   .pixel-border {
-    box-shadow: 
-      4px 0 0 0 currentColor,
-      -4px 0 0 0 currentColor,
-      0 4px 0 0 currentColor,
-      0 -4px 0 0 currentColor;
+    position: relative;
+    border: 2px solid currentColor;
+  }
+
+  .scanlines {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scanlines::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 2;
+    background-size: 100% 4px, 3px 100%;
+    pointer-events: none;
+  }
+
+  .pixel-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .font-pixel-small {
+    font-family: var(--font-pixel);
+    font-size: 0.65rem;
+    line-height: 1.4;
+    letter-spacing: -0.05em;
+  }
+
+  .pixel-box {
+    @apply pixel-border bg-card hover:bg-muted/50 transition-colors;
   }
 }
 
@@ -143,6 +198,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -153,14 +209,23 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
 }
 
 @keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .cursor-blink::after {

@@ -7,23 +7,23 @@ const ContactSection = () => {
         <p className="text-primary text-xs tracking-[0.3em] uppercase mb-4 text-glow-blue">
           // Contact
         </p>
-        <h2 className="font-pixel text-lg md:text-2xl leading-relaxed mb-6">
+        <h2 className="text-2xl md:text-3xl leading-relaxed mb-6">
           Let's{" "}
           <span className="text-accent text-glow-green">collaborate</span>
         </h2>
-        <p className="text-muted-foreground max-w-xl mx-auto mb-10 font-mono text-sm">
-          Always open to discussing new projects, creative ideas, or opportunities 
+        <p className="text-muted-foreground max-w-xl mx-auto mb-10 font-standard text-base">
+          Always open to discussing new projects, creative ideas, or opportunities
           to be part of something meaningful.
         </p>
-        
-        <a 
+
+        <a
           href="mailto:hello@example.com"
-          className="inline-flex items-center gap-3 px-6 py-3 bg-primary text-primary-foreground font-mono text-sm hover:bg-accent transition-colors glow-blue hover:glow-green"
+          className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground font-bold text-sm hover:bg-accent transition-colors pixel-border text-border"
         >
           <Mail className="w-4 h-4" />
           Say Hello
         </a>
-        
+
         <div className="flex justify-center gap-6 mt-12">
           {[
             { icon: Github, href: "#", label: "GitHub" },
@@ -35,15 +35,15 @@ const ContactSection = () => {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 border-2 border-border hover:border-primary flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
+              className="w-12 h-12 pixel-border text-border hover:text-primary flex items-center justify-center text-muted-foreground transition-colors bg-card"
               aria-label={label}
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-5 h-5" />
             </a>
           ))}
         </div>
-        
-        <p className="text-xs text-muted-foreground mt-16 font-mono">
+
+        <p className="text-xs text-muted-foreground mt-16 font-standard">
           © {new Date().getFullYear()} — Built with pixels & passion
         </p>
       </div>

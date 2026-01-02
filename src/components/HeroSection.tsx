@@ -1,50 +1,62 @@
-import { ArrowDown } from "lucide-react";
-import profileAvatar from "@/assets/profile-avatar.png";
+import { ArrowDown, FileText } from "lucide-react";
+import heroPhoto from "@/assets/headshot.jpeg";
 
 const HeroSection = () => {
   return (
-    <section className="min-h-screen flex flex-col justify-center items-center px-6 relative">
-      <div className="text-center max-w-4xl mx-auto">
-        {/* Profile Photo */}
+    <section className="min-h-screen flex flex-col justify-center items-center px-6 relative pixel-grid">
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+          animation: float 4s ease-in-out infinite;
+        }
+      `}</style>
+
+      <div className="text-center max-w-3xl mx-auto relative z-10">
+        {/* Profile Photo - With floating animation */}
         <div className="mb-8 animate-fade-up">
-          <div className="w-32 h-32 md:w-40 md:h-40 mx-auto border-4 border-primary glow-blue overflow-hidden">
-            <img 
-              src={profileAvatar} 
-              alt="Profile photo"
-              className="w-full h-full object-cover pixel-render"
+          <div className="w-40 h-40 md:w-48 md:h-48 mx-auto overflow-hidden rounded-2xl border border-border/50 animate-float">
+            <img
+              src={heroPhoto}
+              alt="Robert Tylman"
+              className="w-full h-full object-cover object-top"
             />
           </div>
         </div>
 
-        <p className="text-primary text-xs tracking-[0.4em] uppercase mb-6 animate-fade-up delay-100 text-glow-blue">
-          {"<"} Engineer / Musician / Creator {"/>"}
+        {/* Greeting */}
+        <p className="text-muted-foreground text-sm mb-3 animate-fade-up delay-100 font-standard">
+          Hi, I'm Robert!
         </p>
-        <h1 className="font-pixel text-2xl md:text-3xl lg:text-4xl tracking-tight mb-8 animate-fade-up delay-200 leading-relaxed">
-          Hello, I'm{" "}
-          <span className="text-accent text-glow-green">Your Name</span>
+
+        {/* Title - Cleaner, More Professional */}
+        <h1 className="text-lg md:text-2xl lg:text-3xl mb-8 animate-fade-up delay-200 leading-tight font-semibold text-foreground whitespace-nowrap">
+          Computer Engineer & Musician
         </h1>
-        <p className="font-mono text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-up delay-300">
-          Crafting elegant solutions at the intersection of{" "}
-          <span className="text-primary">code</span> and{" "}
-          <span className="text-accent">composition</span>.
-        </p>
+
+        {/* Resume Button - Clean & Professional */}
+        <div className="animate-fade-up delay-400">
+          <a
+            href="/resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 border border-foreground/30 hover:border-foreground text-foreground/80 hover:text-foreground transition-all duration-200 font-standard text-sm"
+          >
+            <FileText className="w-4 h-4" />
+            <span>Resume</span>
+          </a>
+        </div>
       </div>
-      
-      <a 
+
+      <a
         href="#about"
-        className="absolute bottom-12 animate-fade-in delay-500 text-primary hover:text-accent transition-colors"
+        className="absolute bottom-12 animate-fade-in delay-500 text-muted-foreground hover:text-foreground transition-colors z-10"
         aria-label="Scroll to about section"
       >
-        <ArrowDown className="w-6 h-6 animate-bounce" />
+        <ArrowDown className="w-5 h-5 animate-bounce" />
       </a>
-
-      {/* Decorative pixel grid */}
-      <div className="absolute inset-0 pointer-events-none opacity-5">
-        <div className="w-full h-full" style={{
-          backgroundImage: 'linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)',
-          backgroundSize: '40px 40px'
-        }} />
-      </div>
     </section>
   );
 };
