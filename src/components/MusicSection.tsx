@@ -35,10 +35,11 @@ const MusicSection = () => {
 
   const generateRandomPalette = () => {
     const hue1 = Math.floor(Math.random() * 360);
-    const hue2 = (hue1 + 40 + Math.floor(Math.random() * 40)) % 360; // Analogous-ish colors
+    // Dramatic shift: Complementary or near-complementary colors (150-210 degree shift)
+    const hue2 = (hue1 + 180 + Math.floor(Math.random() * 60 - 30)) % 360;
     return {
-      primary: `hsla(${hue1}, 80%, 65%, 0.8)`,
-      secondary: `hsla(${hue2}, 70%, 50%, 0.5)`
+      primary: `hsla(${hue1}, 100%, 65%, 0.9)`, // Higher saturation & opacity
+      secondary: `hsla(${hue2}, 90%, 45%, 0.7)`  // Higher saturation & opacity
     };
   };
 
@@ -274,7 +275,10 @@ const MusicSection = () => {
             </div>
 
             {/* Track List */}
-            <div className="space-y-2">
+            <div className="space-y-4">
+              <p className="text-sm text-white uppercase tracking-widest font-bold ml-1">
+                Other Music
+              </p>
               {tracks.map((track, index) => {
                 const isCurrentTrack = currentTrackIndex === index;
                 const isTrackPlaying = isCurrentTrack && isPlaying;
@@ -283,7 +287,9 @@ const MusicSection = () => {
                   <div
                     key={track.title}
                     onClick={() => handleTrackClick(index)}
-                    className={`group flex items-center gap-4 p-4 rounded transition-colors cursor-pointer ${isCurrentTrack ? "bg-secondary/50 border border-primary/20" : "hover:bg-secondary/30 border border-transparent"
+                    className={`group flex items-center gap-4 p-4 rounded transition-colors cursor-pointer ${isCurrentTrack
+                      ? "bg-secondary/50 border border-primary/20 backdrop-blur-md"
+                      : "hover:bg-secondary/30 border border-transparent"
                       }`}
                   >
                     <img
@@ -335,6 +341,7 @@ const MusicSection = () => {
 
         {/* Piano Showcase */}
         <div>
+
           <h3 className="text-2xl md:text-3xl font-bold text-center mb-12">
             Piano Showcase
           </h3>

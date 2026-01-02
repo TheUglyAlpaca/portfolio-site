@@ -17,25 +17,10 @@ const AboutSection = () => {
               strong algorithms, and practical impact.
             </p>
             <p className="text-base">
-              With a background in Computer Science and formal training in music, I bring a unique
-              perspective to everything I create. I believe the best solutions—whether in code or
-              composition—emerge from the careful balance of structure and creativity.
-            </p>
-            <p className="text-base">
-              Currently exploring the spaces where technology and art intersect, building tools
-              that empower creators and crafting sounds that tell stories.
+              With a background in Computer Science and music, I balance structure and creativity to deliver unique solutions. I explore the intersection of technology and art, building tools that empower creators and crafting sounds that tell stories.
             </p>
 
-            <div className="pt-8 flex flex-wrap gap-4">
-              {["TypeScript", "React", "Python", "Piano", "Production", "Sound Design"].map((skill) => (
-                <span
-                  key={skill}
-                  className="px-3 py-1.5 text-xs font-mono pixel-border text-muted-foreground hover:text-primary transition-colors bg-secondary/30"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
+
           </div>
         </div>
       </div>
