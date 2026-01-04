@@ -13,19 +13,19 @@ const AboutSection = () => {
             <ul className="space-y-4 text-lg">
               <li className="flex items-start gap-4">
                 <span className="text-primary text-xl leading-none mt-1">•</span>
-                <span>I'm a Computer Engineer specializing in software engineering and applied AI</span>
+                <span>I'm a Computer Engineer specializing in full stack development and applied AI applications</span>
               </li>
               <li className="flex items-start gap-4">
                 <span className="text-primary text-xl leading-none mt-1">•</span>
-                <span>I design and build scalable, high-performance systems</span>
+                <span>I design efficient and scalable applications</span>
               </li>
               <li className="flex items-start gap-4">
                 <span className="text-primary text-xl leading-none mt-1">•</span>
-                <span>I have a strong grounding in algorithms, systems, and optimization</span>
+                <span>I have a strong foundation in algorithms, systems, and optimization</span>
               </li>
               <li className="flex items-start gap-4">
                 <span className="text-primary text-xl leading-none mt-1">•</span>
-                <span>I bring a creative perspective shaped by music technology</span>
+                <span>I bring a creative perspective shaped by DSP and music technology</span>
               </li>
             </ul>
 
