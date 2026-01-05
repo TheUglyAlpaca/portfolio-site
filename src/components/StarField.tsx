@@ -24,10 +24,26 @@ interface ShootingStar {
     angle: number;
 }
 
+interface Planet {
+    x: number;
+    y: number;
+    size: number;
+    color: string;
+    hasRing: boolean;
+    ringColor: string;
+    ringAngle: number;
+    speed: number;
+    angle: number;
+    curveSpeed: number;
+    depth: number;
+}
+
+
 const StarField: React.FC<StarFieldProps> = ({ isActive }) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const starsRef = useRef<Star[]>([]);
     const shootingStarsRef = useRef<ShootingStar[]>([]);
+    const planetsRef = useRef<Planet[]>([]);
     const [globalOpacity, setGlobalOpacity] = useState(0);
     const globalOpacityRef = useRef(0);
     const requestRef = useRef<number>();
@@ -53,7 +69,7 @@ const StarField: React.FC<StarFieldProps> = ({ isActive }) => {
     }, [isActive]);
 
     const initStars = (width: number, height: number) => {
-        const starCount = 600;
+        const starCount = 800;
         const stars: Star[] = [];
         const colors = [
             '255, 255, 255', // White
@@ -97,6 +113,71 @@ const StarField: React.FC<StarFieldProps> = ({ isActive }) => {
             speed: 25 + Math.random() * 20,
             opacity: 1,
             angle: Math.PI / 4 + (Math.random() - 0.5) * 0.2, // ~45 degrees
+        };
+    };
+
+    const createPlanet = (width: number, height: number, scrollOffset: number): Planet => {
+        const size = 2 + Math.random() * 4; // Very small: 2-6 radius
+        const depth = 0.05 + Math.random() * 0.15;
+
+        const colors = [
+            '#E6B89C', // Mars-ish
+            '#88B04B', // Earth-ish
+            '#92A8D1', // Neptune-ish
+            '#F7CAC9', // Jupiter-ish
+            '#FF6F61', // Coral
+            '#6B5B95', // Purple
+            '#955251', // Reddish
+        ];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        const hasRing = Math.random() < 0.2; // 20% chance of ring
+        const ringColor = 'rgba(255, 255, 255, 0.4)';
+        const ringAngle = Math.random() * Math.PI;
+
+        // Spawn logic
+        const side = Math.floor(Math.random() * 4);
+        let x, y, angle;
+        const speed = 0.1 + Math.random() * 0.3; // Slow drift
+        const curveSpeed = (Math.random() - 0.5) * 0.002; // Slight curve
+
+        switch (side) {
+            case 0: // Top
+                x = Math.random() * width;
+                y = -size * 4 + (scrollOffset * depth);
+                angle = Math.PI / 2 + (Math.random() - 0.5) * 0.5; // Downwards ±
+                break;
+            case 1: // Right
+                x = width + size * 4;
+                y = Math.random() * height + (scrollOffset * depth);
+                angle = Math.PI + (Math.random() - 0.5) * 0.5; // Leftwards ±
+                break;
+            case 2: // Bottom
+                x = Math.random() * width;
+                y = height + size * 4 + (scrollOffset * depth);
+                angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.5; // Upwards ±
+                break;
+            case 3: // Left
+                x = -size * 4;
+                y = Math.random() * height + (scrollOffset * depth);
+                angle = (Math.random() - 0.5) * 0.5; // Rightwards ±
+                break;
+            default:
+                x = 0; y = 0; angle = 0;
+        }
+
+        return {
+            x,
+            y,
+            size,
+            color,
+            hasRing,
+            ringColor,
+            ringAngle,
+            speed,
+            angle,
+            curveSpeed,
+            depth
         };
     };
 
@@ -157,6 +238,69 @@ const StarField: React.FC<StarFieldProps> = ({ isActive }) => {
                 s.x += Math.cos(s.angle) * s.speed;
                 s.y += Math.sin(s.angle) * s.speed;
                 s.opacity -= 0.02;
+            });
+
+            // Draw Planets
+            if (Math.random() < 0.0008 && planetsRef.current.length < 2) {
+                planetsRef.current.push(createPlanet(canvas.width, canvas.height, scrollY));
+            }
+
+            // Filter
+            planetsRef.current = planetsRef.current.filter((p) => {
+                const parallaxY = scrollY * p.depth;
+                const visualY = p.y - parallaxY;
+                return (
+                    visualY > -100 &&
+                    visualY < canvas.height + 100 &&
+                    p.x > -100 &&
+                    p.x < canvas.width + 100
+                );
+            });
+
+            planetsRef.current.forEach((p) => {
+                const parallaxY = scrollY * p.depth;
+                const visualY = p.y - parallaxY;
+
+                ctx.save();
+                ctx.translate(p.x, visualY);
+
+                // Draw Ring Background (Back half)
+                if (p.hasRing) {
+                    ctx.save();
+                    ctx.rotate(p.ringAngle);
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, p.size * 2.5, p.size * 0.6, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${0.3 * currentGlobalOpacity})`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                // Draw Planet Body
+                ctx.beginPath();
+                ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = p.color; // Opacity applied via global check if needed, but solid color is fine
+                ctx.globalAlpha = currentGlobalOpacity;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+
+                // Simple Shadow
+                ctx.beginPath();
+                ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+                const grad = ctx.createLinearGradient(-p.size, -p.size, p.size, p.size);
+                grad.addColorStop(0, 'rgba(255,255,255,0.2)');
+                grad.addColorStop(1, 'rgba(0,0,0,0.5)');
+                ctx.fillStyle = grad;
+                ctx.globalAlpha = currentGlobalOpacity;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+
+                ctx.restore();
+
+                // Update position with curve
+                p.angle += p.curveSpeed;
+                p.x += Math.cos(p.angle) * p.speed;
+                p.y += Math.sin(p.angle) * p.speed;
             });
         }
 

@@ -153,7 +153,7 @@ const ProjectsSection = () => {
         {/* Navigation Arrows - Hidden on mobile, visible on md+ */}
         <button
           onClick={prevProject}
-          className="hidden md:flex absolute left-4 top-1/2 z-20 w-12 h-12 items-center justify-center bg-background/80 rounded-full text-muted-foreground hover:text-foreground transition-colors animate-scale-pulse"
+          className="hidden md:flex absolute left-0 md:-left-12 top-1/2 z-20 w-12 h-12 items-center justify-center bg-background/80 rounded-full text-muted-foreground hover:text-foreground transition-all border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.15)] hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] animate-scale-pulse"
           aria-label="Previous project"
         >
           <ChevronLeft className="w-7 h-7" />
@@ -161,7 +161,7 @@ const ProjectsSection = () => {
 
         <button
           onClick={nextProject}
-          className="hidden md:flex absolute right-4 top-1/2 z-20 w-12 h-12 items-center justify-center bg-background/80 rounded-full text-muted-foreground hover:text-foreground transition-colors animate-scale-pulse"
+          className="hidden md:flex absolute right-0 md:-right-12 top-1/2 z-20 w-12 h-12 items-center justify-center bg-background/80 rounded-full text-muted-foreground hover:text-foreground transition-all border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.15)] hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] animate-scale-pulse"
           aria-label="Next project"
         >
           <ChevronRight className="w-7 h-7" />
