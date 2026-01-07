@@ -2,11 +2,15 @@ import { useState, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ProjectCard from "./ProjectCard";
 import twistIcon from "@/assets/twist-icon.png";
-import twistImg1 from "@/assets/twist-screenshot-1.png";
-import twistImg2 from "@/assets/twist-screenshot-2.png";
-import twistImg3 from "@/assets/twist-screenshot-3.png";
-import twistImg4 from "@/assets/twist-screenshot-4.png";
-import twistImg5 from "@/assets/twist-screenshot-5.png";
+import twistImg1 from "@/assets/Twist-Game-Flow-1.png";
+import twistImg2 from "@/assets/Twist-Game-Flow-2.png";
+import twistImg3 from "@/assets/Twist-Game-Flow-3.png";
+import twistImg4 from "@/assets/Twist-Game-Flow-4.png";
+import twistImg5 from "@/assets/Twist-Game-Flow-5.png";
+import twistImg6 from "@/assets/Twist-Game-Flow-6.png";
+import twistImg7 from "@/assets/Twist-Game-Flow-7.png";
+import twistImg8 from "@/assets/Twist-Game-Flow-8.png";
+import twistImg9 from "@/assets/Twist-Game-Flow-9.png";
 import tuneboyScreenshot from "@/assets/tuneboy-screenshot.png";
 import tuneboyLogo from "@/assets/tuneboy_logo.png";
 import tuneboyAvif from "@/assets/tuneboy.avif";
@@ -28,7 +32,7 @@ const projects = [
     title: "Twist!",
     description: "Built a production-ready multiplayer party game that transforms players’ camera rolls into AI-generated challenges, featuring real-time image uploads, transformation pipelines, voting, and a responsive UI.",
     tags: ["Expo", "Express", "Gemini 3.0 API", "Node.js", "React.js", "Redis", "Socket.io"],
-    images: [twistIcon, twistImg1, twistImg2, twistImg3, twistImg4, twistImg5],
+    images: [twistIcon, twistImg1, twistImg2, twistImg3, twistImg4, twistImg5, twistImg6, twistImg7, twistImg8, twistImg9],
     link: "https://twistpartygame.com/",
   },
   {
