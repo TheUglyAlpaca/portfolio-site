@@ -34,7 +34,7 @@ const Navigation = () => {
 
   const socialLinks = [
     { icon: Linkedin, href: "https://www.linkedin.com/in/robert-tylman-8a0410223/", label: "LinkedIn" },
-    { icon: Github, href: "https://github.com/TheUglyAlpaca", label: "GitHub" },
+    { icon: Github, href: "https://github.com/RobertTylman", label: "GitHub" },
     { icon: Instagram, href: "https://www.instagram.com/tilly_plays_keys/", label: "Instagram" },
     { icon: SpotifyIcon, href: "https://open.spotify.com/artist/7ogGgg364w3zuu04ZAB7xt?si=ixQWATC2T-eBay-5ZvJ15w", label: "Spotify" },
   ];

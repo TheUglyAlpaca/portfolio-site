@@ -116,7 +116,7 @@ const HeroSection = () => {
         {/* Resume Button - Clean & Professional */}
         <div className="animate-fade-up delay-400">
           <a
-            href={`${import.meta.env.BASE_URL}RobertTylmanResume.pdf`}
+            href={`${import.meta.env.BASE_URL}Robert Tylman Resume 2026.pdf`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border border-foreground/30 hover:border-foreground text-foreground/80 hover:text-foreground transition-all duration-200 font-standard text-sm animate-pulse-scale backdrop-blur-md bg-white/5"
